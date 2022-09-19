@@ -7,6 +7,7 @@ extension Print<T extends num> on List<List<T>> {
     print(dolumnify(
       this,
       columnSplitter: ' | ',
+      fraction: 8,
     ));
     print('$border\n');
   }
