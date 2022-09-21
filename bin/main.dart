@@ -1,27 +1,28 @@
-import 'assets/gauss_controller.dart';
+import 'assets/matrix_methods_controller.dart';
+import 'extensions/string_extension.dart';
 import 'modules/matrix.dart';
-import 'extensions/list_extension.dart';
-
-class Epsilon {
-  // ignore: constant_identifier_names
-  static const NUM_FRACTION = 6;
-}
+import 'modules/matrix_controller.dart';
 
 void main() {
-  Matrix matrix = Matrix.createGrid();
-  matrix.grid.printGrid(
-    message: 'Исходная матрица, полученная из СЛАУ:',
+  Matrix matrix = Matrix.createGrid(
+    isRandomFilled: true,
   );
 
-  final gaussController = GaussController(
+  print('Введите допустимую погрешность для будущих корней:');
+  var str = '';
+
+  final matrixController = MatrixController(
     matrix: matrix,
+    epsilon: str.parseStringToFloat(
+      onErrorMessage: 'неверный формат погрешности',
+    ),
   );
 
-  gaussController.convertToTriangleView();
-
-  gaussController.grid.printGrid(
-    message: 'Приведенная к треугольному виду матрица:',
+  final methodController = MatrixMethodsController(
+    matrixController: matrixController,
   );
 
-  gaussController.printResult();
+    methodController.executeGauss();
+
+    //methodController.
 }
