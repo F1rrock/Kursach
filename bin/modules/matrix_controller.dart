@@ -1,5 +1,3 @@
-//import 'package:equations/equations.dart';
-
 import '../extensions/list_extension.dart';
 import 'matrix.dart';
 
@@ -10,24 +8,45 @@ class MatrixController {
 
   final List<double> xx;
 
+  String _toStringWithSign(double num) {
+    return num >= 0
+        ? '+${num.toStringAsFixed(fraction)}'
+        : num.toStringAsFixed(fraction);
+  }
+
+  void printEqualAsLine() {
+    for (var i = 0; i < matrix.size; i++) {
+      var rightSideString =
+          '${(1 / matrix.grid[i][i]).toStringAsFixed(fraction)}'
+          '*(${matrix.grid[i][matrix.size].toStringAsFixed(fraction)}';
+      for (var j = 0; j < matrix.size; j++) {
+        if (i != j) {
+          rightSideString +=
+          '${_toStringWithSign(-matrix.grid[i][j])}*x${j + 1}';
+        }
+      }
+      print('x${i + 1} = $rightSideString)');
+    }
+  }
+
   bool tryNormalize() {
-    for(var k = 0; k < matrix.size; k ++) {
+    for (var k = 0; k < matrix.size; k++) {
       var index = -1;
-      for(var i = k; i < matrix.size; i ++) {
+      for (var i = k; i < matrix.size; i++) {
         var absSum = 0.0;
-        for(var j = 0; j < matrix.size; j ++) {
-          if(k != j) {
+        for (var j = 0; j < matrix.size; j++) {
+          if (k != j) {
             absSum += matrix.grid[i][j].abs();
           }
         }
-        if(matrix.grid[i][k].abs() > absSum) {
+        if (matrix.grid[i][k].abs() > absSum) {
           index = i;
         }
       }
-      if(index < 0) {
+      if (index < 0) {
         return false;
       }
-      if(index != k) {
+      if (index != k) {
         var temp = matrix.grid[index];
         matrix.grid[index] = matrix.grid[k];
         matrix.grid[k] = temp;
@@ -40,6 +59,7 @@ class MatrixController {
     for (var k = 0; k < matrix.size; k++) {
       var max = matrix.grid[k][k].abs();
       var index = k;
+
       /// find row with max element in k column
       for (var i = k + 1; i < matrix.size; i++) {
         if (matrix.grid[i][k].abs() > max) {
@@ -47,6 +67,7 @@ class MatrixController {
           index = i;
         }
       }
+
       /// replace rows
       if (max < epsilon) {
         /// no zero diagonal elements
@@ -55,6 +76,7 @@ class MatrixController {
             'невозможно точно определить корень x${index + 1}\n');
         return false;
       }
+
       /// check if we need replace strings
       if (k != index) {
         var temp = matrix.grid[k];
@@ -66,9 +88,11 @@ class MatrixController {
           fraction: fraction,
         );
       }
+
       /// do normal equality
       for (var i = k; i < matrix.size; i++) {
         var temp = matrix.grid[i][k];
+
         /// for zero coefficient
         if (temp.abs() < epsilon) {
           continue;
@@ -83,6 +107,7 @@ class MatrixController {
             fraction: fraction,
           );
         }
+
         /// equality don't sub self
         if (i == k) {
           continue;
@@ -102,17 +127,14 @@ class MatrixController {
 
   void printAnswers() {
     /// fill answer row
-    xx[matrix.size - 1] =
-    matrix.grid
-    [matrix.size - 1][matrix.size];
+    xx[matrix.size - 1] = matrix.grid[matrix.size - 1][matrix.size];
     for (var i = matrix.size - 2; i >= 0; i--) {
-      xx[i] =
-      matrix.grid[i][matrix.size];
+      xx[i] = matrix.grid[i][matrix.size];
       for (var j = i + 1; j < matrix.size; j++) {
-        xx[i] -=
-            matrix.grid[i][j] * xx[j];
+        xx[i] -= matrix.grid[i][j] * xx[j];
       }
     }
+
     /// print answers
     print('\nКорни системы:');
     var i = 0;
@@ -125,14 +147,15 @@ class MatrixController {
   MatrixController({
     required this.matrix,
     this.epsilon = 0.00001,
-  })  : xx = List.filled(
-          matrix.size,
-          0,
-        ),
+  })
+      : xx = List.filled(
+    matrix.size,
+    0,
+  ),
         fraction = epsilon
             .toString()
             .substring(
-              epsilon.toString().indexOf('.'),
-            )
+          epsilon.toString().indexOf('.'),
+        )
             .length;
 }

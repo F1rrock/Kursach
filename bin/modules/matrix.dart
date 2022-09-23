@@ -42,8 +42,9 @@ abstract class _MatrixProperties {
           size,
           (column) => List.generate(
             size + 1,
-            (row) => random.nextDouble()
-                + random.nextInt(RANDOM_INT_RANGE),
+            (row) => (random.nextDouble()
+                + random.nextInt(RANDOM_INT_RANGE))
+                * (random.nextBool() ? 1 : -1),
             growable: false,
           ),
           growable: false,

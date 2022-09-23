@@ -35,4 +35,22 @@ extension Parsing on String {
     } while (element == null);
     return element;
   }
+
+  bool parseStringToBool({String onErrorMessage = ''}) {
+    bool? element = true;
+    const map = <String, bool>{
+      '0': false,
+      '1': true,
+    };
+    do {
+      if (element == null) {
+        print(onErrorMessage);
+      }
+      var input = stdin.readLineSync(
+        encoding: utf8,
+      );
+      element = map[input];
+    } while (element == null);
+    return element;
+  }
 }

@@ -1,6 +1,6 @@
 import 'package:dolumns/dolumns.dart';
 
-extension Print<T extends num> on List<List<T>> {
+extension Print<T extends Object> on List<List<T>> {
   void printGrid({
     String message = '',
     int fraction = 6,
