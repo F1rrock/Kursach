@@ -230,10 +230,12 @@ class MatrixController {
           matrix.size,
           0,
         ),
+
         /// get [fraction] by [epsilon] value once
         /// at [this] object has created
         fraction = epsilon
             .toString()
+
             /// get only part after the dot
             /// in [epsilon] string
             .substring(
@@ -241,6 +243,7 @@ class MatrixController {
               /// in [epsilon] string
               epsilon.toString().indexOf('.'),
             )
+
             /// get the length of the subbed
             /// [epsilon] string
             .length;
