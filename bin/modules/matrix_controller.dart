@@ -1,87 +1,118 @@
 import '../extensions/list_extension.dart';
 import 'matrix.dart';
 
+/// initialize a public class which associate with [Matrix] class
 class MatrixController {
+  /// this field associate with [Matrix] class
   final Matrix matrix;
+  /// error in answer field
   final double epsilon;
+  /// amount of digits after the dot in [double] num
+  /// this field set automatically once at initialize part at
+  /// [this] constructor
   final int fraction;
-
+  /// answer column of [double], here will be answers
+  /// on the given equation system
   final List<double> xx;
-
+  /// declare of file local method, which convert [num] to [String]
+  /// with plus and minus sign before
   String _toStringWithSign(double num) {
     return num >= 0
         ? '+${num.toStringAsFixed(fraction)}'
         : num.toStringAsFixed(fraction);
   }
-
+  /// print each equal as linear function with each diagonal element
   void printEqualAsLine() {
     for (var i = 0; i < matrix.size; i++) {
+      /// generate right side of the equation
       var rightSideString =
           '${(1 / matrix.grid[i][i]).toStringAsFixed(fraction)}'
           '*(${matrix.grid[i][matrix.size].toStringAsFixed(fraction)}';
+      /// add all the rest answers to right side of equation
       for (var j = 0; j < matrix.size; j++) {
         if (i != j) {
           rightSideString +=
           '${_toStringWithSign(-matrix.grid[i][j])}*x${j + 1}';
         }
       }
+      /// print all equation on each diagonal element
       print('x${i + 1} = $rightSideString)');
     }
   }
-
+  /// [tryNormalize] function tries to normalize
+  /// (absolute value of diagonal element is greater than sum
+  /// of each absolute value element in row)
+  /// matrix by switching rows
   bool tryNormalize() {
     for (var k = 0; k < matrix.size; k++) {
+      /// set index to invalid value in each iteration
       var index = -1;
       for (var i = k; i < matrix.size; i++) {
+        /// declare of absolute sum
         var absSum = 0.0;
         for (var j = 0; j < matrix.size; j++) {
+          /// add each absolute element without diagonal elem
           if (k != j) {
             absSum += matrix.grid[i][j].abs();
           }
         }
         if (matrix.grid[i][k].abs() > absSum) {
+          /// set [index] to normal row for this index of iteration
           index = i;
         }
       }
+      /// [this] function will return false if normality
+      /// row for this iteration not found
       if (index < 0) {
         return false;
       }
+      /// switch rows if this need
       if (index != k) {
         var temp = matrix.grid[index];
         matrix.grid[index] = matrix.grid[k];
         matrix.grid[k] = temp;
       }
     }
+    /// return true if given matrix modified
+    /// to matrix where normality < q < 1; q in (0; 1)
     return true;
   }
-
+  /// [this] function converts given matrix
+  /// to upper triangle view
   bool convertToTriangleView() {
     for (var k = 0; k < matrix.size; k++) {
+      /// declare of max absolute element in each column
+      /// to avoid [DivideByZeroException], because all zero elements
+      /// will be in the bottom of the matrix
       var max = matrix.grid[k][k].abs();
+      /// declare index of row that had
+      /// max absolute element in column
       var index = k;
-
-      /// find row with max element in k column
+      /// find row with max element in [k] column
       for (var i = k + 1; i < matrix.size; i++) {
         if (matrix.grid[i][k].abs() > max) {
           max = matrix.grid[i][k].abs();
           index = i;
         }
       }
-
-      /// replace rows
+      /// switch rows between elem and [max]
       if (max < epsilon) {
-        /// no zero diagonal elements
+        /// [max] element is zero,
+        /// therefore diagonal element is equal to zero
+        /// and accurate answer never be given
         print('\nНельзя получить точное решение '
             'данной системы т.к. '
             'невозможно точно определить корень x${index + 1}\n');
+        /// return false, because accurate answer never be given
         return false;
       }
-
-      /// check if we need replace strings
+      /// switch rows if this need
       if (k != index) {
         var temp = matrix.grid[k];
         matrix.grid[k] = matrix.grid[index];
         matrix.grid[index] = temp;
+        /// print matrix with message, that implements
+        /// pseudo UI
         matrix.grid.printGrid(
           message: 'поменяем строки '
               '${k + 1} и ${index + 1} местами',
