@@ -1,7 +1,7 @@
-import 'matrix_methods_controller.dart';
+import 'core/matrix_case.dart';
 
-/// declare of class, which extends [MatrixMethodsController]
-class GaussController extends MatrixMethodsController {
+/// declare of class, which extends [MatrixCase]
+class GaussCase extends MatrixCase {
   /// override and implement method
   @override
   void execute() {
@@ -15,21 +15,17 @@ class GaussController extends MatrixMethodsController {
     /// try to convert to upper triangle view
     /// if one of diagonal element is 0, this method returns [false]
     /// and [true] by default
-    if (!matrixController.convertToTriangleView()) {
+    if (!matrixRepository.convertToTriangleView()) {
       /// exit from [this] function
       return;
     }
 
     /// print and calculate answer column
-    matrixController.printAnswers();
+    matrixRepository.printAnswers();
   }
 
   /// declare of unnamed constructor
-  GaussController({
-    required super.matrixController,
-  }) {
-    /// calls [execute] function by default
-    /// after [this] object has created
-    execute();
-  }
+  const GaussCase({
+    required super.matrixRepository,
+  });
 }

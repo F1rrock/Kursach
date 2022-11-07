@@ -1,18 +1,20 @@
-import '../extensions/list_extension.dart';
-import 'matrix.dart';
+//####  Модуль matrix_repository
+
+//####  Основные свойства, используемые в программе:
+//####  size - размер матрицы
+//####  grid - двумерный массив, хранящий
+//####  значения полей матрицы
+
+//####  Подпрограммы модуля:
+//####  createGrid - фабричный конструктор, задающий начальные настройки для работы с
+//####  модулем;
+
+import '../../core/extensions/list_extension.dart';
+import '../../domain/entities/matrix_entity.dart';
+import '../../domain/repositories/matrix_repository.dart';
 
 /// initialize a public class which associate with [Matrix] class
-class MatrixController {
-  /// this field associate with [Matrix] class
-  final Matrix matrix;
-
-  /// error in answer field
-  final double epsilon;
-
-  /// amount of digits after the dot in [double] num
-  /// this field set automatically once at initialize part at
-  /// [this] constructor
-  final int fraction;
+class MatrixMethodsRepository extends MatrixRepository {
 
   /// answer column of [double], here will be answers
   /// on the given equation system
@@ -26,7 +28,7 @@ class MatrixController {
         : num.toStringAsFixed(fraction);
   }
 
-  /// print each equal as linear function with each diagonal element
+  @override
   void printEqualAsLine() {
     for (var i = 0; i < matrix.size; i++) {
       /// generate right side of the equation
@@ -47,10 +49,7 @@ class MatrixController {
     }
   }
 
-  /// [tryNormalize] function tries to normalize
-  /// (absolute value of diagonal element is greater than sum
-  /// of each absolute value element in row)
-  /// matrix by switching rows
+  @override
   bool tryNormalize() {
     for (var k = 0; k < matrix.size; k++) {
       /// set index to invalid value in each iteration
@@ -89,8 +88,7 @@ class MatrixController {
     return true;
   }
 
-  /// [this] function converts given matrix
-  /// to upper triangle view
+  @override
   bool convertToTriangleView() {
     for (var k = 0; k < matrix.size; k++) {
       /// declare of max absolute element in each column
@@ -111,7 +109,7 @@ class MatrixController {
       }
 
       /// switch rows between elem and [max]
-      if (max < epsilon) {
+      if (max < epsilon / 100) {
         /// [max] element is zero,
         /// therefore diagonal element is equal to zero
         /// and accurate answer never be given
@@ -123,7 +121,6 @@ class MatrixController {
         return false;
       }
 
-      /// switch rows if this need
       if (k != index) {
         var temp = matrix.grid[k];
         matrix.grid[k] = matrix.grid[index];
@@ -190,6 +187,7 @@ class MatrixController {
 
   /// this function find answers and push it to answer column
   /// then print answers
+  @override
   void printAnswers() {
     /// put the last element of matrix to answer column
     xx[matrix.size - 1] = matrix.grid[matrix.size - 1][matrix.size];
@@ -221,30 +219,18 @@ class MatrixController {
   }
 
   /// declare of unnamed constructor
-  MatrixController({
-    required this.matrix,
-    this.epsilon = 0.00001,
+  MatrixMethodsRepository({
+    required MatrixEntity matrix,
+    double epsilon = 0.00001,
   })  : xx = List.filled(
           /// fill answer column with zero
           /// fields as default values
           matrix.size,
           0,
         ),
+        super(
+          matrix: matrix,
+          epsilon: epsilon,
+        );
 
-        /// get [fraction] by [epsilon] value once
-        /// at [this] object has created
-        fraction = epsilon
-            .toString()
-
-            /// get only part after the dot
-            /// in [epsilon] string
-            .substring(
-              /// get the dot position
-              /// in [epsilon] string
-              epsilon.toString().indexOf('.'),
-            )
-
-            /// get the length of the subbed
-            /// [epsilon] string
-            .length;
 }

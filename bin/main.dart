@@ -1,15 +1,46 @@
-import 'assets/gauss_controller.dart';
-import 'assets/seidel_controller.dart';
+//####  Программа kursach_dart
 
-import 'extensions/string_extension.dart';
+//####  Курсовой проект
+//####  по предмету МДК 01.01  Разработка программных модулей
 
-import 'modules/matrix.dart';
-import 'modules/matrix_controller.dart';
+//####  по теме "Разработка программы нахождения корней СЛАУ"
+//####  Язык: Dart
+//####  Разработал: Куртаметов Э.Р.
+
+//####  Задание:
+//####  Разработка программы нахождения корней СЛАУ:
+//####  1) методом Жордана-Гаусса;
+//####  2) методом Гаусса-Зейделя.
+
+//####  Основные переменные, используемые в программе:
+//####  matrix - экземпляр объекта класса Matrix
+//####  epsilon - переменная, хранящая значение погрешности корней
+//####  matrixController - объект, управления состоянием исходной матрицы;
+//####  concreteMethod - экземпляр класса MatrixMethodsController, где с помощью подстановки
+//####  Барбары Лисков будет вызываться нужный метод решения
+
+//####  Вызываемые методы:
+//####  createGrid - фабричный конструктор класса MatrixMethods;
+//####  parseStringToFloat - процедура перевода введенного числа
+//####  в тип данных float;
+//####  execute - функция вызова алгоритма нужного метода;
+
+
+
+
+import 'core/extensions/string_extension.dart';
+import 'data/models/matrix_model.dart';
+import 'data/repositories/matrix_repository.dart';
+import 'domain/entities/matrix_entity.dart';
+import 'domain/repositories/matrix_repository.dart';
+import 'domain/use_cases/core/matrix_case.dart';
+import 'domain/use_cases/gauss_case.dart';
+import 'domain/use_cases/seidel_case.dart';
 
 /// application runs here
 void main() {
   /// create an object of [Matrix] class by [createGrid] constructor
-  Matrix matrix = Matrix.createGrid();
+  MatrixEntity matrix = MatrixModel.createGrid();
 
   /// printing of illustrating message, that implements pseudo UI
   print(
@@ -36,11 +67,11 @@ void main() {
       onErrorMessage: 'Неверный формат погрешности, '
           'попробуйте ввести другое значение:',
     );
-  } while (epsilon <= 0.0000001 || epsilon >= 1);
+  } while (epsilon <= 0.1e-7 || epsilon >= 1);
 
   /// create an object of [MatrixController] class
   /// by unnamed constructor with passing of [matrix] and [epsilon]
-  final matrixController = MatrixController(
+  final MatrixRepository matrixRepository = MatrixMethodsRepository(
     matrix: matrix,
     epsilon: epsilon,
   );
@@ -51,19 +82,22 @@ void main() {
 
   /// call [parseStringToBoolMethod] by [extension] on [String]
   /// that returns [bool] type
+  MatrixCase concreteMethod;
   if (str.parseStringToBool(
       onErrorMessage: 'Неверный формат, введите 0, '
           'если метод Гаусса, или 1, если метод Зейделя:')) {
     /// create an object of [SeidelController] class
     /// by unnamed constructor with passing of [matrixController]
-    SeidelController(
-      matrixController: matrixController,
+    concreteMethod = SeidelCase(
+      matrixRepository: matrixRepository,
     );
   } else {
     /// create an object of [GaussController] class
     /// by unnamed constructor with passing of [matrixController]
-    GaussController(
-      matrixController: matrixController,
+    concreteMethod = GaussCase(
+      matrixRepository: matrixRepository,
     );
   }
+  /// use this like strategy pattern
+  concreteMethod.execute();
 }
